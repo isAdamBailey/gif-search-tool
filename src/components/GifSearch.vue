@@ -3,7 +3,13 @@
     <h1>{{ msg }}</h1>
     <input v-model="searchTerm"
            type="text">
-    <button class="button" @click="getGifs()">Search</button>
+    <button class="button"
+            @click="getGifs()">Search</button>
+    <div class="gif-container">
+      <img v-for="gif in gifs"
+           :src="gif"
+           :key="gif.id">
+    </div>
   </div>
 </template>
 
@@ -16,6 +22,7 @@
     data() {
       return {
         searchTerm: '',
+        gifs: [],
       };
     },
     methods: {
@@ -33,10 +40,17 @@
             return response.json();
           })
           .then(json => {
-            console.log(json);
+            this.buildGifs(json);
           })
           .catch(err => {
             console.log(err);
+          });
+      },
+      buildGifs(json) {
+        this.gifs = json.data
+          .map(gif => gif.id)
+          .map(gifId => {
+            return `https://media.giphy.com/media/${gifId}/giphy.gif`;
           });
       },
     },
