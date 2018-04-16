@@ -1,17 +1,16 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <GifSearch msg="Search Giphy"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import GifSearch from './components/GifSearch.vue';
 
 export default {
   name: 'app',
   components: {
-    HelloWorld,
+    GifSearch,
   },
 };
 </script>
