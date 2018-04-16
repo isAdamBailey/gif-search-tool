@@ -6,9 +6,11 @@
     <button class="button"
             @click="getGifs()">Search</button>
     <div class="gif-container">
-      <img v-for="gif in gifs"
-           :src="gif"
-           :key="gif.id">
+      <div v-for="gif in gifs"
+           class="gif-container__item">
+        <img :src="gif"
+             :key="gif.id">
+      </div>
     </div>
   </div>
 </template>
@@ -74,5 +76,17 @@
 
   .button:hover {
     background-color: rgb(0, 148, 0);
+  }
+
+  .gif-container {
+    margin-top: 30px;
+    border-top: dotted 2px lightgray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .gif-container__item {
+    padding: 10px;
   }
 </style>
