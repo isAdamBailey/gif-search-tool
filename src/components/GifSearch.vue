@@ -28,67 +28,61 @@
 </template>
 
 <script>
-  export default {
-    name: 'GifSearch',
-    props: {
-      msg: String,
+export default {
+  name: 'GifSearch',
+  props: {
+    msg: String,
+  },
+  data() {
+    return {
+      searchTerm: '',
+      gifs: [],
+      words: [],
+    };
+  },
+  methods: {
+    getGifs(word) {
+      this.gifs = [];
+      this.searchTerm = word;
+      const apiKey = 'dc6zaTOxFJmzC';
+      const searchEndPoint = 'https://api.giphy.com/v1/gifs/search?';
+      const limit = 5;
+
+      const url = `${searchEndPoint}&api_key=${apiKey}&q=${this.searchTerm}&limit=${limit}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then((json) => {
+          this.buildGifs(json);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
-    data() {
-      return {
-        searchTerm: '',
-        gifs: [],
-        words: [],
-      };
+    buildGifs(json) {
+      this.gifs = json.data
+        .map(gif => gif.id)
+        .map(gifId => `https://media.giphy.com/media/${gifId}/giphy.gif`);
     },
-    methods: {
-      getGifs(word) {
-        this.gifs = [];
-        this.searchTerm = word;
-        let apiKey = "dc6zaTOxFJmzC";
-        let searchEndPoint = "https://api.giphy.com/v1/gifs/search?";
-        let limit = 5;
+    getWords() {
+      this.gifs = [];
+      this.words = [];
+      const searchEndPoint = 'https://api.datamuse.com';
+      const limit = 10;
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const url = `${searchEndPoint}/words?ml=${this.searchTerm}&max=${limit}`;
 
-        let url = `${searchEndPoint}&api_key=${apiKey}&q=${this.searchTerm}&limit=${limit}`;
-
-        fetch(url)
-          .then(response => {
-            return response.json();
-          })
-          .then(json => {
-            this.buildGifs(json);
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      },
-      buildGifs(json) {
-        this.gifs = json.data
-          .map(gif => gif.id)
-          .map(gifId => {
-            return `https://media.giphy.com/media/${gifId}/giphy.gif`;
-          });
-      },
-      getWords() {
-        this.gifs = [];
-        this.words = [];
-        let searchEndPoint = "https://api.datamuse.com";
-        let limit = 10;
-
-        let url = `${searchEndPoint}/words?ml=${this.searchTerm}&max=${limit}`;
-
-        fetch(url, { mode: 'no-cors' })
-          .then(response => {
-            return response.json();
-          })
-          .then(json => {
-            this.words = json;
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      },
+      fetch(proxyUrl + url)
+        .then(response => response.json())
+        .then((json) => {
+          this.words = json;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
-  };
+  },
+};
 </script>
 
 <style scoped lang="scss">
