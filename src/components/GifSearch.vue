@@ -71,7 +71,7 @@
       getWords() {
         this.gifs = [];
         this.words = [];
-        let searchEndPoint = "https://api.datamuse.com";
+        let searchEndPoint = "http://api.datamuse.com";
         let limit = 10;
 
         let url = `${searchEndPoint}/words?ml=${this.searchTerm}&max=${limit}`;
