@@ -76,7 +76,7 @@
 
         let url = `${searchEndPoint}/words?ml=${this.searchTerm}&max=${limit}`;
 
-        fetch(url, { credentials: 'omit' })
+        fetch(url)
           .then(response => {
             return response.json();
           })
