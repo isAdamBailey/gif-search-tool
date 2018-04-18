@@ -2,11 +2,14 @@
   <div>
     <h1>{{ msg }}</h1>
     <p>Search a word or phrase, then click a result to see related GIFs</p>
-    <input v-model="searchTerm"
-           @keyup.enter="getWords()"
-           type="text">
-    <button class="button"
-            @click="getWords()">Search</button>
+    <span class="search-input__container">
+      <input v-model="searchTerm"
+             class="search-input"
+             @keyup.enter="getWords()"
+             type="text">
+        <button class="search-input__button"
+                @click="getWords()">Search</button>
+    </span>
     <div class="word-container">
       <div v-for="word in words"
            class="word-container__item"
@@ -46,7 +49,7 @@ export default {
       this.searchTerm = word;
       const apiKey = 'dc6zaTOxFJmzC';
       const searchEndPoint = 'https://api.giphy.com/v1/gifs/search?';
-      const limit = 5;
+      const limit = 6;
 
       const url = `${searchEndPoint}&api_key=${apiKey}&q=${this.searchTerm}&limit=${limit}`;
 
@@ -86,39 +89,49 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  input {
-    padding: 5px;
-    margin-bottom: 20px;
+  .search-input {
+    padding:8px 20px 8px 20px;
+    margin:3px;
+    font-size: 16px;
+    border-radius: 20px 0 0 20px;
   }
-
-  .button {
-    background-color: rgb(0, 172, 0);
+  .search-input__button {
+    transition: all .4s ease;
+    background-color: purple;
+    font-size:16px;
     color: white;
-    padding: 5px 20px;
-    border: none;
-    display: block;
+    padding: 8px 20px;
+    width: 100px;
+    border-radius: 0 20px 20px 0;
+  }
+  .search-input__container {
+    width: 500px;
     margin: 0 auto;
   }
-
-  .button:hover {
-    background-color: rgb(0, 148, 0);
+  .search-input__button:hover {
+    background-color: lighten(purple, 15);
   }
 
   .gif-container {
     margin-top: 30px;
-    border-top: dotted 2px lightgray;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+    grid-column-gap: 10px;
+    grid-row-gap: 15px;
     align-items: center;
   }
 
   .gif-container__item {
+    justify-self: stretch;
     padding: 10px;
+    border: solid 2px lightgray;
+    border-radius: 20px;
   }
 
   .word-container {
     margin-top: 30px;
-    border-top: dotted 2px lightgray;
+    background: #ffffff;
+    border-radius: 20px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -129,10 +142,14 @@ export default {
   }
 
   .word-container__item--link {
+    transition: all .4s ease;
     font-weight: bold;
+    font-size: 20px;
   }
 
   .word-container__item--link:hover {
     cursor: pointer;
+    color: purple;
+    text-decoration: underline;
   }
 </style>
