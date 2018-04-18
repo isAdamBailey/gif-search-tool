@@ -22,10 +22,12 @@
     </div>
     <div v-if="gifs"
          class="gif-container">
-      <img v-for="gif in gifs"
+      <div v-for="gif in gifs"
            class="gif-container__item"
-           :src="gif"
-           :key="gif.id"/>
+           :key="gif.id">
+        <img :src="gif.src"/>
+        <p>{{ gif.url }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -63,9 +65,10 @@ export default {
         });
     },
     buildGifs(json) {
-      this.gifs = json.data
-        .map(gif => gif.id)
-        .map(gifId => `https://media.giphy.com/media/${gifId}/giphy.gif`);
+      this.gifs = json.data.map(gif => ({
+        src: `https://media.giphy.com/media/${gif.id}/giphy.gif`,
+        url: gif.url,
+      }));
     },
     getWords() {
       this.gifs = [];
@@ -74,6 +77,8 @@ export default {
       const limit = 10;
       const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
       const url = `${searchEndPoint}/words?ml=${this.searchTerm}&max=${limit}`;
+
+      this.getGifs(this.searchTerm);
 
       fetch(proxyUrl + url)
         .then(response => response.json())
@@ -102,6 +107,7 @@ export default {
     color: white;
     padding: 8px 20px;
     width: 100px;
+    border: none;
     border-radius: 0 20px 20px 0;
   }
   .search-input__container {
@@ -120,12 +126,17 @@ export default {
     grid-row-gap: 15px;
     align-items: center;
   }
-
   .gif-container__item {
+    display: grid;
+    grid-template-rows: 3fr 1fr;
+    grid-row-gap: 5px;
     justify-self: stretch;
     padding: 10px;
     border: solid 2px lightgray;
     border-radius: 20px;
+  }
+  .gif-container__item img {
+    width: 100%;
   }
 
   .word-container {
@@ -136,17 +147,14 @@ export default {
     justify-content: space-evenly;
     align-items: center;
   }
-
   .word-container__item {
     padding: 10px;
   }
-
   .word-container__item--link {
     transition: all .4s ease;
     font-weight: bold;
     font-size: 20px;
   }
-
   .word-container__item--link:hover {
     cursor: pointer;
     color: purple;
