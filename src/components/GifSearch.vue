@@ -12,14 +12,28 @@
     </span>
     <div class="word-container"
          v-if="words.length">
-      <h3>{{ searchTerm ? `Words related to ${searchTerm}:` : '' }}</h3>
-      <div v-for="word in words"
-           class="word-container__item"
-           :key="word.word">
-        <span class="word-container__item--link"
-              @click="getGifs(word.word)">
+      <h3 class="word-container__item--header">
+        {{ searchTerm ? `Words related to ${searchTerm}:` : '' }}
+      </h3>
+      <div class="word-container__item">
+        <div v-for="word in words"
+             :key="word.word"
+             class="word-container__item--link"
+             @click="getGifs(word.word)">
+            {{ word.word }}
+        </div>
+      </div>
+      <h3 class="word-container__item--header">
+        {{ searchTerm ? `Sprint names summoned from ${searchTerm}:` : '' }}
+      </h3>
+      <div class="word-container__item">
+        <div v-for="(word, index) in words"
+             class="word-container__item--text"
+             :key="index">
           {{ word.word }}
-        </span>
+          {{ adjectives[index] ? adjectives[index].word : '' }}
+          {{ rhymesWiths[index] ? rhymesWiths[index].word : '' }}
+        </div>
       </div>
     </div>
     <div v-if="gifs"
@@ -45,9 +59,16 @@ export default {
       searchTerm: '',
       gifs: [],
       words: [],
+      rhymesWiths: [],
+      adjectives: [],
     };
   },
   methods: {
+    getWords() {
+      this.getMeaningLikes();
+      this.getRhymesWiths();
+      this.getAdjectives();
+    },
     getGifs(word) {
       this.gifs = [];
       this.searchTerm = word;
@@ -71,9 +92,8 @@ export default {
         src: `https://media.giphy.com/media/${gif.id}/giphy.gif`,
       }));
     },
-    fetchDatamuse(query) {
+    fetchDatamuse(query, bucket) {
       this.gifs = [];
-      this.words = [];
       const searchEndPoint = 'https://api.datamuse.com';
       const limit = 10;
       const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
@@ -84,17 +104,20 @@ export default {
       fetch(proxyUrl + url)
         .then(response => response.json())
         .then((json) => {
-          this.words = json;
+          this[`${bucket}`] = json;
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    getMeaningLike() {
-      this.fetchDatamuse('/words?ml=');
+    async getMeaningLikes() {
+      await this.fetchDatamuse('/words?ml=', 'words');
     },
-    async getWords() {
-      await this.getMeaningLike();
+    async getRhymesWiths() {
+      await this.fetchDatamuse('/words?rel_rhy=', 'rhymesWiths');
+    },
+    async getAdjectives() {
+      await this.fetchDatamuse('/words?rel_jjb=', 'adjectives');
     },
   },
 };
@@ -158,16 +181,20 @@ export default {
 
   .word-container {
     margin-top: 30px;
+    padding-bottom: 30px;
     background: #ffffff;
     border-radius: 5px;
+    display: grid;
+    grid-template-rows: 70px 1fr;
+  }
+  .word-container__item {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    align-items: center;
   }
   .word-container__item--link {
-    padding: 10px;
     border-radius: 10%;
+    padding: 10px;
     transition: all .4s ease;
     font-weight: bold;
     font-size: 20px;
@@ -176,5 +203,13 @@ export default {
     cursor: pointer;
     color: white;
     background-color: purple;
+  }
+  .word-container__item--text {
+    font-size: 20px;
+    width: 400px;
+  }
+  .word-container__item--header {
+    font-size: 22px;
+    justify-self: center;
   }
 </style>
