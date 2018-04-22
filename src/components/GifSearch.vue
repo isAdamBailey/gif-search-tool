@@ -10,7 +10,9 @@
         <button class="search-input__button"
                 @click="getWords()">Search</button>
     </span>
-    <div class="word-container">
+    <div class="word-container"
+         v-if="words.length">
+      <h3>{{ searchTerm ? `Words related to ${searchTerm}:` : '' }}</h3>
       <div v-for="word in words"
            class="word-container__item"
            :key="word.word">
@@ -26,7 +28,7 @@
            class="gif-container__item"
            :key="gif.id">
         <img :src="gif.src"/>
-        <p>{{ gif.url }}</p>
+        <div class="gif-container__item--url">{{ gif.src }}</div>
       </div>
     </div>
   </div>
@@ -67,16 +69,15 @@ export default {
     buildGifs(json) {
       this.gifs = json.data.map(gif => ({
         src: `https://media.giphy.com/media/${gif.id}/giphy.gif`,
-        url: gif.url,
       }));
     },
-    getWords() {
+    fetchDatamuse(query) {
       this.gifs = [];
       this.words = [];
       const searchEndPoint = 'https://api.datamuse.com';
       const limit = 10;
       const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const url = `${searchEndPoint}/words?ml=${this.searchTerm}&max=${limit}`;
+      const url = `${searchEndPoint}${query}${this.searchTerm}&max=${limit}`;
 
       this.getGifs(this.searchTerm);
 
@@ -89,40 +90,46 @@ export default {
           console.log(err);
         });
     },
+    getMeaningLike() {
+      this.fetchDatamuse('/words?ml=');
+    },
+    async getWords() {
+      await this.getMeaningLike();
+    },
   },
 };
 </script>
 
 <style scoped lang="scss">
   .search-input {
-    padding:8px 20px 8px 20px;
-    margin:3px;
-    font-size: 16px;
-    border-radius: 20px 0 0 20px;
+    padding: 10px 20px;
+    margin: 0 auto;
+    font-size: 18px;
+    border-radius: 5px;
   }
   .search-input__button {
     transition: all .4s ease;
     background-color: purple;
-    font-size:16px;
+    font-size:18px;
     color: white;
-    padding: 8px 20px;
+    padding: 12px 20px;
     width: 100px;
     border: none;
-    border-radius: 0 20px 20px 0;
+    border-radius: 5px;
   }
   .search-input__container {
     width: 500px;
     margin: 0 auto;
   }
   .search-input__button:hover {
-    background-color: lighten(purple, 15);
+    background-color: lighten(purple, 5);
   }
 
   .gif-container {
     margin-top: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
-    grid-column-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    grid-column-gap: 15px;
     grid-row-gap: 15px;
     align-items: center;
   }
@@ -130,34 +137,44 @@ export default {
     display: grid;
     grid-template-rows: 3fr 1fr;
     grid-row-gap: 5px;
-    justify-self: stretch;
+    justify-self: center;
+    align-self: start;
     padding: 10px;
+    background-color: #ffffff;
     border: solid 2px lightgray;
-    border-radius: 20px;
+    border-radius: 5px;
   }
   .gif-container__item img {
-    width: 100%;
+    max-width: 100%;
+    justify-self: center;
+  }
+  .gif-container__item--url {
+    font-weight: bold;
+    align-self: center;
+    justify-self: center;
+    width: 300px;
+    word-wrap: break-word;
   }
 
   .word-container {
     margin-top: 30px;
     background: #ffffff;
-    border-radius: 20px;
+    border-radius: 5px;
     display: flex;
     justify-content: space-evenly;
+    flex-wrap: wrap;
     align-items: center;
   }
-  .word-container__item {
-    padding: 10px;
-  }
   .word-container__item--link {
+    padding: 10px;
+    border-radius: 10%;
     transition: all .4s ease;
     font-weight: bold;
     font-size: 20px;
   }
   .word-container__item--link:hover {
     cursor: pointer;
-    color: purple;
-    text-decoration: underline;
+    color: white;
+    background-color: purple;
   }
 </style>

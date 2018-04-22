@@ -22,6 +22,9 @@ export default {
   h1, p {
     color: #ffffff;
   }
+  h3 {
+    font-size: 22px;
+  }
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
