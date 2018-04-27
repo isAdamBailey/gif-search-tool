@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "hoek": "^5.0.3",
     "vue": "^2.5.13"
   },
   "devDependencies": {
