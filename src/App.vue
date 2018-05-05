@@ -22,8 +22,11 @@ export default {
   h1, p {
     color: #ffffff;
   }
+  h3, h2, h1 {
+    font-family: 'Ubuntu', sans-serif;
+  }
   #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    font-family: 'Raleway', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
