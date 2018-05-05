@@ -28,6 +28,7 @@ export default {
   }
   h3, h2, h1 {
     font-family: 'Ubuntu', sans-serif;
+    text-transform: uppercase;
   }
   #app {
     text-align: center;

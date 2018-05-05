@@ -17,25 +17,25 @@
     <div class="word-container"
          v-if="words.length">
       <h3 class="word-container__item--header">
-        Click words below to search Giphy for more related gifs
+        Click words below to generate more possibilities
       </h3>
       <div class="word-container__item">
         <div v-for="word in words"
              :key="word.word"
              class="word-container__item--link"
-             @click="getGifs(word.word)">
+             @click="onWordClick(word.word)">
             {{ word.word }}
         </div>
       </div>
       <h3 class="word-container__item--header">
-        Generated sprint names
+        Sprint names generated from <u>{{ searchTerm }}</u>
       </h3>
       <div class="word-container__item">
         <div v-for="(word, index) in words"
              class="word-container__item--text"
              :key="index">
-          {{ word.word }}
           {{ adjectives[index] ? adjectives[index].word : '' }}
+          {{ word.word }}
           {{ rhymesWiths[index] ? rhymesWiths[index].word : '' }}
         </div>
       </div>
@@ -65,6 +65,10 @@ export default {
     };
   },
   methods: {
+    onWordClick(word) {
+      this.searchTerm = word;
+      return this.getWords();
+    },
     getWords() {
       this.getMeaningLikes();
       this.getRhymesWiths();
@@ -93,12 +97,12 @@ export default {
         src: `https://media.giphy.com/media/${gif.id}/giphy.gif`,
       }));
     },
-    fetchDatamuse(query, bucket) {
+    fetchDatamuse(query, bucket, string) {
       this.gifs = [];
       const searchEndPoint = 'https://api.datamuse.com';
       const limit = 10;
       const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const url = `${searchEndPoint}${query}${this.searchTerm}&max=${limit}`;
+      const url = `${searchEndPoint}${query}${string}&max=${limit}`;
 
       this.getGifs(this.searchTerm);
 
@@ -112,13 +116,13 @@ export default {
         });
     },
     async getMeaningLikes() {
-      await this.fetchDatamuse('/words?ml=', 'words');
+      await this.fetchDatamuse('/words?ml=', 'words', this.searchTerm);
     },
     async getRhymesWiths() {
-      await this.fetchDatamuse('/words?rel_rhy=', 'rhymesWiths');
+      await this.fetchDatamuse('/words?rel_rhy=', 'rhymesWiths', this.searchTerm.split(' ', 1));
     },
     async getAdjectives() {
-      await this.fetchDatamuse('/words?rel_jjb=', 'adjectives');
+      await this.fetchDatamuse('/words?rel_jjb=', 'adjectives', this.searchTerm.split(' ', 1));
     },
   },
 };
