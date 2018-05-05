@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <GifSearch msg="Search Giphy"/>
+    <GifSearch/>
   </div>
 </template>
 
@@ -17,7 +17,11 @@ export default {
 
 <style lang="scss">
   body {
+    font-family: 'Raleway', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background: lightslategray;
+    color: #2c3e50;
   }
   h1, p {
     color: #ffffff;
@@ -26,11 +30,12 @@ export default {
     font-family: 'Ubuntu', sans-serif;
   }
   #app {
-    font-family: 'Raleway', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
     margin-top: 60px;
+    grid-template-areas:
+    'header'
+    'input'
+    'words'
+    'gifs';
   }
 </style>

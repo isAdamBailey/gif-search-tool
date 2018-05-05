@@ -1,19 +1,23 @@
 <template>
   <div>
-    <h1>{{ msg }}</h1>
-    <p>Search a word or phrase, then click a result to see related GIFs</p>
-    <span class="search-input__container">
+    <div class="header__container">
+      <h1>Gif Search Sprint Planning Tool</h1>
+      <p>
+        Enter a word or phrase to see related words, possible sprint names, and Gifs based on the search.
+      </p>
+    </div>
+    <div class="search-input__container">
       <input v-model="searchTerm"
              class="search-input"
              @keyup.enter="getWords()"
              type="text">
         <button class="search-input__button"
                 @click="getWords()">Search</button>
-    </span>
+    </div>
     <div class="word-container"
          v-if="words.length">
       <h3 class="word-container__item--header">
-        {{ searchTerm ? `Words related to ${searchTerm}:` : '' }}
+        Click words below to search Giphy for more related gifs
       </h3>
       <div class="word-container__item">
         <div v-for="word in words"
@@ -24,7 +28,7 @@
         </div>
       </div>
       <h3 class="word-container__item--header">
-        {{ searchTerm ? `Sprint names summoned from ${searchTerm}:` : '' }}
+        Generated sprint names
       </h3>
       <div class="word-container__item">
         <div v-for="(word, index) in words"
@@ -51,9 +55,6 @@
 <script>
 export default {
   name: 'GifSearch',
-  props: {
-    msg: String,
-  },
   data() {
     return {
       searchTerm: '',
@@ -124,6 +125,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .header__container {
+    grid-area: header;
+    padding: 20px;
+    border: 3px dashed #ffffff;
+    border-radius: 5px;
+    background: #2c3e50;
+  }
+
   .search-input {
     padding: 10px 20px;
     margin: 0 auto;
@@ -141,6 +150,8 @@ export default {
     border-radius: 5px;
   }
   .search-input__container {
+    grid-area: input;
+    padding: 30px 0 10px 0;
     width: 500px;
     margin: 0 auto;
   }
@@ -149,6 +160,7 @@ export default {
   }
 
   .gif-container {
+    grid-area: gifs;
     margin-top: 30px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
@@ -180,9 +192,11 @@ export default {
   }
 
   .word-container {
+    grid-area: words;
     margin-top: 30px;
     padding-bottom: 30px;
     background: #ffffff;
+    border: 3px dashed #2c3e50;
     border-radius: 5px;
     display: grid;
     grid-template-rows: 70px 1fr;
