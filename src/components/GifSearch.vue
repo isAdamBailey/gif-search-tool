@@ -140,13 +140,13 @@ export default {
   .search-input {
     padding: 10px 20px;
     margin: 0 auto;
-    font-size: 18px;
+    font-size: 20px;
     border-radius: 5px;
   }
   .search-input__button {
     transition: all .4s ease;
     background-color: purple;
-    font-size:18px;
+    font-size:20px;
     color: white;
     padding: 12px 20px;
     width: 100px;
@@ -160,7 +160,7 @@ export default {
     margin: 0 auto;
   }
   .search-input__button:hover {
-    background-color: lighten(purple, 5);
+    background-color: darken(purple, 8);
   }
 
   .gif-container {
@@ -220,7 +220,7 @@ export default {
   .word-container__item--link:hover {
     cursor: pointer;
     color: white;
-    background-color: purple;
+    background-color: darken(purple, 8);
   }
   .word-container__item--text {
     font-size: 20px;
