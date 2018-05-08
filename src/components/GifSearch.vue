@@ -36,7 +36,7 @@
              :key="index">
           {{ adjectives[index] ? adjectives[index].word : '' }}
           {{ word.word }}
-          {{ rhymesWiths[index] ? rhymesWiths[index].word : '' }}
+          {{ nounsByAdjectives[index] ? nounsByAdjectives[index].word : '' }}
         </div>
       </div>
     </div>
@@ -60,8 +60,8 @@ export default {
       searchTerm: '',
       gifs: [],
       words: [],
-      rhymesWiths: [],
       adjectives: [],
+      nounsByAdjectives: [],
     };
   },
   methods: {
@@ -71,8 +71,8 @@ export default {
     },
     getWords() {
       this.getMeaningLikes();
-      this.getRhymesWiths();
       this.getAdjectives();
+      this.getNounsByAdjectives();
     },
     getGifs(word) {
       this.gifs = [];
@@ -118,11 +118,11 @@ export default {
     async getMeaningLikes() {
       await this.fetchDatamuse('/words?ml=', 'words', this.searchTerm);
     },
-    async getRhymesWiths() {
-      await this.fetchDatamuse('/words?rel_rhy=', 'rhymesWiths', this.searchTerm.split(' ', 1));
-    },
     async getAdjectives() {
       await this.fetchDatamuse('/words?rel_jjb=', 'adjectives', this.searchTerm.split(' ', 1));
+    },
+    async getNounsByAdjectives() {
+      await this.fetchDatamuse('/words?rel_jja=', 'nounsByAdjectives', this.searchTerm.split(' ', 1));
     },
   },
 };
