@@ -156,7 +156,6 @@ export default {
   .search-input__container {
     grid-area: input;
     padding: 30px 0 10px 0;
-    width: 500px;
     margin: 0 auto;
   }
   .search-input__button:hover {
@@ -203,7 +202,7 @@ export default {
     border: 3px dashed #2c3e50;
     border-radius: 5px;
     display: grid;
-    grid-template-rows: 70px 1fr;
+    grid-template-rows: 1fr;
   }
   .word-container__item {
     display: flex;
@@ -224,10 +223,12 @@ export default {
   }
   .word-container__item--text {
     font-size: 20px;
-    width: 400px;
+    margin: 0 20px;
   }
   .word-container__item--header {
     font-size: 22px;
     justify-self: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid lightgray;
   }
 </style>
