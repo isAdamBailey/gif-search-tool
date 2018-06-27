@@ -2,29 +2,30 @@
   <div>
     <div class="header__container">
       <h1>Gif Search Sprint Planning Tool</h1>
-      <p>
-        Enter a word or phrase to see related words, possible sprint names, and Gifs based on the search.
-      </p>
     </div>
     <div class="search-input__container">
       <input v-model="searchTerm"
              class="search-input"
-             @keyup.enter="getWords()"
+             @keyup.enter="explore()"
              type="text">
+      <span class="search-input__button--group">
         <button class="search-input__button"
-                @click="getWords()">Search</button>
+                @click="justOne()">Just Give Me One</button>
+        <button class="search-input__button"
+                @click="explore()">Explore</button>
+      </span>
     </div>
-    <div class="word-container"
+    <div :class="wordContainerClass"
          v-if="words.length">
-      <h3 class="word-container__item--header">
+      <h3 v-if="!singleItem" class="word-container__item--header">
         Click words below to generate more possibilities
       </h3>
-      <div class="word-container__item">
+      <div v-if="!singleItem" class="word-container__item">
         <div v-for="word in words"
              :key="word.word"
              class="word-container__item--link"
              @click="onWordClick(word.word)">
-            {{ word.word }}
+            {{ capital(word.word) }}
         </div>
       </div>
       <h3 class="word-container__item--header">
@@ -32,16 +33,16 @@
       </h3>
       <div class="word-container__item">
         <div v-for="(word, index) in words"
-             class="word-container__item--text"
+             :class="wordContainerItemTextClass"
              :key="index">
-          {{ adjectives[index] ? adjectives[index].word : '' }}
-          {{ word.word }}
-          {{ nounsByAdjectives[index] ? nounsByAdjectives[index].word : '' }}
+          {{ adjectives[index] ? capital(adjectives[index].word) : '' }}
+          {{ capital(word.word) }}
+          {{ nounsByAdjectives[index] ? capital(nounsByAdjectives[index].word) : '' }}
         </div>
       </div>
     </div>
     <div v-if="gifs"
-         class="gif-container">
+         :class="gifContainerClass">
       <div v-for="gif in gifs"
            class="gif-container__item"
            :key="gif.id">
@@ -62,26 +63,44 @@ export default {
       words: [],
       adjectives: [],
       nounsByAdjectives: [],
+      singleItem: false,
     };
+  },
+  computed: {
+    gifContainerClass() {
+      return this.singleItem ? 'gif-container-single' : 'gif-container';
+    },
+    wordContainerClass() {
+      return this.singleItem ? 'word-container-single' : 'word-container';
+    },
+    wordContainerItemTextClass() {
+      return this.singleItem ? 'word-container__item--text-single' : 'word-container__item--text';
+    },
   },
   methods: {
     onWordClick(word) {
       this.searchTerm = word;
-      return this.getWords();
+      return this.explore();
     },
-    getWords() {
+    explore() {
+      this.singleItem = false;
       this.getMeaningLikes();
       this.getAdjectives();
       this.getNounsByAdjectives();
     },
-    getGifs(word) {
+    justOne() {
+      this.singleItem = true;
+      this.getMeaningLikes(1);
+      this.getAdjectives(1);
+      this.getNounsByAdjectives(1);
+    },
+    getGifs(word, max) {
       this.gifs = [];
       this.searchTerm = word;
       const apiKey = 'dc6zaTOxFJmzC';
       const searchEndPoint = 'https://api.giphy.com/v1/gifs/search?';
-      const limit = 6;
 
-      const url = `${searchEndPoint}&api_key=${apiKey}&q=${this.searchTerm}&limit=${limit}`;
+      const url = `${searchEndPoint}&api_key=${apiKey}&q=${this.searchTerm}&limit=${max}`;
 
       fetch(url)
         .then(response => response.json())
@@ -97,14 +116,13 @@ export default {
         src: `https://media.giphy.com/media/${gif.id}/giphy.gif`,
       }));
     },
-    fetchDatamuse(query, bucket, string) {
+    fetchDatamuse(query, bucket, string, max) {
       this.gifs = [];
       const searchEndPoint = 'https://api.datamuse.com';
-      const limit = 10;
       const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const url = `${searchEndPoint}${query}${string}&max=${limit}`;
+      const url = `${searchEndPoint}${query}${string}&max=${max}`;
 
-      this.getGifs(this.searchTerm);
+      this.getGifs(this.searchTerm, max);
 
       fetch(proxyUrl + url)
         .then(response => response.json())
@@ -115,14 +133,17 @@ export default {
           console.log(err);
         });
     },
-    async getMeaningLikes() {
-      await this.fetchDatamuse('/words?ml=', 'words', this.searchTerm);
+    async getMeaningLikes(max = 6) {
+      await this.fetchDatamuse('/words?ml=', 'words', this.searchTerm, max);
     },
-    async getAdjectives() {
-      await this.fetchDatamuse('/words?rel_jjb=', 'adjectives', this.searchTerm.split(' ', 1));
+    async getAdjectives(max = 6) {
+      await this.fetchDatamuse('/words?rel_jjb=', 'adjectives', this.searchTerm.split(' ', 1), max);
     },
-    async getNounsByAdjectives() {
-      await this.fetchDatamuse('/words?rel_jja=', 'nounsByAdjectives', this.searchTerm.split(' ', 1));
+    async getNounsByAdjectives(max = 6) {
+      await this.fetchDatamuse('/words?rel_jja=', 'nounsByAdjectives', this.searchTerm.split(' ', 1), max);
+    },
+    capital(word) {
+      return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
     },
   },
 };
@@ -139,9 +160,14 @@ export default {
 
   .search-input {
     padding: 10px 20px;
-    margin: 0 auto;
     font-size: 20px;
     border-radius: 5px;
+    margin: 5px 0;
+  }
+  .search-input__button--group {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 5px 0;
   }
   .search-input__button {
     transition: all .4s ease;
@@ -149,13 +175,18 @@ export default {
     font-size:20px;
     color: white;
     padding: 12px 20px;
-    width: 100px;
+    margin: 0 10px;
     border: none;
     border-radius: 5px;
   }
   .search-input__container {
     grid-area: input;
+    display: flex;
+    justify-content: space-evenly;
+    align-items:flex-end;
+    flex-wrap: wrap;
     padding: 30px 0 10px 0;
+    max-width: 700px;
     margin: 0 auto;
   }
   .search-input__button:hover {
@@ -170,6 +201,10 @@ export default {
     grid-column-gap: 15px;
     grid-row-gap: 15px;
     align-items: center;
+  }
+  .gif-container-single {
+    margin-top: 30px;
+    display: grid;
   }
   .gif-container__item {
     display: grid;
@@ -204,6 +239,14 @@ export default {
     display: grid;
     grid-template-rows: 1fr;
   }
+  .word-container-single {
+    margin: 30px auto;
+    padding-bottom: 30px;
+    max-width: 700px;
+    background: #ffffff;
+    border: 3px dashed #2c3e50;
+    border-radius: 5px;
+  }
   .word-container__item {
     display: flex;
     justify-content: space-evenly;
@@ -223,6 +266,11 @@ export default {
   }
   .word-container__item--text {
     font-size: 20px;
+    margin: 0 20px;
+  }
+  .word-container__item--text-single {
+    font-size: 40px;
+    font-weight: bold;
     margin: 0 20px;
   }
   .word-container__item--header {
