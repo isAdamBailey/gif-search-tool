@@ -119,12 +119,11 @@ export default {
     fetchDatamuse(query, bucket, string, max) {
       this.gifs = [];
       const searchEndPoint = 'https://api.datamuse.com';
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
       const url = `${searchEndPoint}${query}${string}&max=${max}`;
 
       this.getGifs(this.searchTerm, max);
 
-      fetch(proxyUrl + url)
+      fetch(url)
         .then(response => response.json())
         .then((json) => {
           this[`${bucket}`] = json;
